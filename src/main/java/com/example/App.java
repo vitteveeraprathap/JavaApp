@@ -1,36 +1,30 @@
-/*
- *
- *  * AzureIiotApplication.java Copyright (C) 2025 NTT Global Data Centers. All rights reserved.
- *
- *
- */
+package com.example;
 
-package com.ntt.gdc.azureiiot;
+import com.sun.net.httpserver.HttpServer;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpExchange;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
 
-import com.ntt.gdc.azureiiot.configuration.CustomerConfig;
-import com.ntt.gdc.azureiiot.configuration.KeyVaultPropertyProcessor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.ApplicationListener;
-
-@SpringBootApplication
-@EnableConfigurationProperties(CustomerConfig.class)
-@Slf4j
-public class AzureIiotApplication {
-
-	public static void main(String[] args) {
-		SpringApplication app = new SpringApplication(AzureIiotApplication.class);
-		// Run processor *after* Key Vault secrets are available
-		app.addListeners((ApplicationListener<ApplicationReadyEvent>) event -> {
-			log.info("🔹 Running KeyVaultPropertyProcessor (post-KeyVault)...");
-			new KeyVaultPropertyProcessor().postProcessEnvironment(
-					event.getApplicationContext().getEnvironment(),
-					event.getSpringApplication()
-			);
-		});
-		app.run(args);
-	}
+public class App {
+    public static void main(String[] args) throws IOException {
+        int port = Integer.parseInt(System.getenv().getOrDefault("PORT", "8080"));
+        HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
+        
+        server.createContext("/", new HttpHandler() {
+            @Override
+            public void handle(HttpExchange exchange) throws IOException {
+                String response = "Hello from Java App in Azure Container!";
+                exchange.sendResponseHeaders(200, response.length());
+                OutputStream os = exchange.getResponseBody();
+                os.write(response.getBytes());
+                os.close();
+            }
+        });
+        
+        server.setExecutor(null);
+        server.start();
+        System.out.println("Server started on port " + port);
+    }
 }
