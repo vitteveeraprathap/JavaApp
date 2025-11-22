@@ -1,2 +1,0 @@
-# JavaApp
-JavaApp
