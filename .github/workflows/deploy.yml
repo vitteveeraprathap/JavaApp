@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 env:
-  IMAGE_NAME: java-app
+  IMAGE_NAME: web-app
   IMAGE_TAG: ${{ github.sha }}
 
 jobs:
@@ -55,3 +55,8 @@ jobs:
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "**Image:** ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}" >> $GITHUB_STEP_SUMMARY
         echo "**Tags:** ${{ env.IMAGE_TAG }}, latest" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Available Endpoints:**" >> $GITHUB_STEP_SUMMARY
+        echo "- Home: /" >> $GITHUB_STEP_SUMMARY
+        echo "- Health: /health" >> $GITHUB_STEP_SUMMARY
+        echo "- Info: /info" >> $GITHUB_STEP_SUMMARY
